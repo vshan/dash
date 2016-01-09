@@ -57,12 +57,19 @@ int main(int argc, char *argv[])
     printf("client: received '%s'\n",buf);
 
     send(sockfd, argv[2], strlen(argv[2]), 0);
+
     char msg[100];
     for (;;) {
+        get_in:
         printf("\n> ");
         scanf("%s", msg);
-        send(sockfd, msg, strlen(msg), 0);
-        recv(sockfd, buf, MAXDATASIZE-1, 0);
+        if (send(sockfd, msg, strlen(msg), 0) == -1) {
+            printf("error in send");
+            goto get_in;
+        }
+
+        numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
+        buf[numbytes] = '\0';
         printf("server: %s\n", buf);
     }
 

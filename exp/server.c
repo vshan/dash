@@ -34,7 +34,7 @@ int main(void)
   int yes=1;
   char s[INET6_ADDRSTRLEN];
   int rv;
-  char *buf;
+  char buf[100];
   int numbytes;
 
   memset(&hints, 0, sizeof hints);
@@ -65,13 +65,14 @@ int main(void)
       s, sizeof s);
 
     printf("server: got connection from %s\n", s);
-    char *msg, *name;
+    char msg[100], name[100];
     if (!fork()) {
       close(sockfd);
       send(new_fd, "hello, world!", 13, 0);
       numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
       buf[numbytes] = '\0';
       printf("client %s registered\n", buf);
+      strcpy(name, buf);
       for (;;) {
         numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
         buf[numbytes] = '\0';
