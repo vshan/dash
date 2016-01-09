@@ -14,6 +14,7 @@
 #define PORT "3491"
 #define BACKLOG 10
 #define MAXDATASIZE 100
+#define MAX_MSG_SIZE 1001
 
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -65,7 +66,8 @@ int main(void)
       s, sizeof s);
 
     printf("server: got connection from %s\n", s);
-    char msg[100], name[100];
+    char name[100];
+    char *msg = (char *) malloc (MAX_MSG_SIZE);
     if (!fork()) {
       close(sockfd);
       send(new_fd, "hello, world!", 13, 0);
@@ -74,11 +76,14 @@ int main(void)
       printf("client %s registered\n", buf);
       strcpy(name, buf);
       for (;;) {
+        printf("waiting for reply...\n");
         numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
         buf[numbytes] = '\0';
         printf("%s: %s\n", name, buf);
         printf("> ");
-        scanf("%s", msg);
+        fgets (msg, MAX_MSG_SIZE, stdin);
+        if ((strlen(msg)>0) && (msg[strlen (msg) - 1] == '\n'))
+          msg[strlen (msg) - 1] = '\0';
         send(new_fd, msg, strlen(msg), 0);
       }
       close(new_fd);

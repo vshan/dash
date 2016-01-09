@@ -14,6 +14,8 @@
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once 
 
+#define MAX_MSG_SIZE 1001
+
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -58,19 +60,21 @@ int main(int argc, char *argv[])
 
     send(sockfd, argv[2], strlen(argv[2]), 0);
 
-    char msg[100];
+    char *msg = (char *) malloc (MAX_MSG_SIZE);
     for (;;) {
         get_in:
         printf("\n> ");
-        scanf("%s", msg);
+        fgets (msg, MAX_MSG_SIZE, stdin);
+        if ((strlen(msg)>0) && (msg[strlen (msg) - 1] == '\n'))
+          msg[strlen (msg) - 1] = '\0';
         if (send(sockfd, msg, strlen(msg), 0) == -1) {
             printf("error in send");
             goto get_in;
         }
-
+        printf("waiting for reply...\n");
         numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
         buf[numbytes] = '\0';
-        printf("server: %s\n", buf);
+        printf("chetan: %s\n", buf);
     }
 
     close(sockfd);
