@@ -12,7 +12,7 @@
 
 #define PORT "3491" // the port client will be connecting to 
 
-#define MAXDATASIZE 100 // max number of bytes we can get at once 
+#define MAXDATASIZE 100000 // max number of bytes we can get at once 
 
 #define MAX_MSG_SIZE 1001
 
@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
             goto get_in;
         }
         // printf("waiting for reply...\n");
-        // numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
-        // buf[numbytes] = '\0';
-        // printf("chetan: %s\n", buf);
+        numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
+        buf[numbytes] = '\0';
+        printf("%s", buf);
     }
 
     close(sockfd);

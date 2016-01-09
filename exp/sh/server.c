@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <assert.h>
+#include <fcntl.h>
 
 #define PORT "3491"
 #define BACKLOG 10
@@ -131,17 +132,31 @@ int main(void)
         printf("%s: %s\n", name, buf);
         if (!fork()) { // child process
           close(new_fd);
+          close(STDOUT_FILENO);
+          open("./output", O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
           char **tokens = str_split(buf, ' ');
           int i;
           for (i = 0; *(tokens + i); i++);
             *(tokens + i) = NULL;
           execvp(tokens[0], tokens);
-        }
+        } else wait(NULL);
         // printf("> ");
         // fgets (msg, MAX_MSG_SIZE, stdin);
         // if ((strlen(msg)>0) && (msg[strlen (msg) - 1] == '\n'))
         //   msg[strlen (msg) - 1] = '\0';
-        // send(new_fd, msg, strlen(msg), 0);
+
+        FILE *f = fopen("./output", "rb");
+        fseek(f, 0, SEEK_END);
+        long fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);
+
+        char *buf2 = malloc(fsize + 1);
+        fread(buf2, fsize, 1, f);
+        fclose(f);
+
+        buf2[fsize] = 0;
+        send(new_fd, buf2, strlen(buf2), 0);
+        free(buf2);
       }
       close(new_fd);
       exit(0);
