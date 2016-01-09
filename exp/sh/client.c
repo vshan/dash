@@ -71,10 +71,10 @@ int main(int argc, char *argv[])
             printf("error in send");
             goto get_in;
         }
-        printf("waiting for reply...\n");
-        numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
-        buf[numbytes] = '\0';
-        printf("chetan: %s\n", buf);
+        // printf("waiting for reply...\n");
+        // numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
+        // buf[numbytes] = '\0';
+        // printf("chetan: %s\n", buf);
     }
 
     close(sockfd);

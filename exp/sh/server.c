@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <assert.h>
 
 #define PORT "3491"
 #define BACKLOG 10
@@ -24,6 +25,55 @@ void *get_in_addr(struct sockaddr *sa)
 
   return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
+
+char** str_split(char* a_str, const char a_delim)
+{
+    char** result    = 0;
+    size_t count     = 0;
+    char* tmp        = a_str;
+    char* last_comma = 0;
+    char delim[2];
+    delim[0] = a_delim;
+    delim[1] = 0;
+
+    /* Count how many elements will be extracted. */
+    while (*tmp)
+    {
+        if (a_delim == *tmp)
+        {
+            count++;
+            last_comma = tmp;
+        }
+        tmp++;
+    }
+
+    /* Add space for trailing token. */
+    count += last_comma < (a_str + strlen(a_str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    count++;
+
+    result = malloc(sizeof(char*) * count);
+
+    if (result)
+    {
+        size_t idx  = 0;
+        char* token = strtok(a_str, delim);
+
+        while (token)
+        {
+            assert(idx < count);
+            *(result + idx++) = strdup(token);
+            token = strtok(0, delim);
+        }
+        assert(idx == count - 1);
+        *(result + idx) = 0;
+    }
+
+    return result;
+}
+
 
 int main(void)
 {
@@ -76,15 +126,22 @@ int main(void)
       printf("client %s registered\n", buf);
       strcpy(name, buf);
       for (;;) {
-        printf("waiting for reply...\n");
         numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
         buf[numbytes] = '\0';
         printf("%s: %s\n", name, buf);
-        printf("> ");
-        fgets (msg, MAX_MSG_SIZE, stdin);
-        if ((strlen(msg)>0) && (msg[strlen (msg) - 1] == '\n'))
-          msg[strlen (msg) - 1] = '\0';
-        send(new_fd, msg, strlen(msg), 0);
+        if (!fork()) { // child process
+          close(new_fd);
+          char **tokens = str_split(buf, ' ');
+          int i;
+          for (i = 0; *(tokens + i); i++);
+            *(tokens + i) = NULL;
+          execvp(tokens[0], tokens);
+        }
+        // printf("> ");
+        // fgets (msg, MAX_MSG_SIZE, stdin);
+        // if ((strlen(msg)>0) && (msg[strlen (msg) - 1] == '\n'))
+        //   msg[strlen (msg) - 1] = '\0';
+        // send(new_fd, msg, strlen(msg), 0);
       }
       close(new_fd);
       exit(0);
