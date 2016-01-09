@@ -78,7 +78,7 @@ int main(void)
         printf("%s: %s\n", name, buf);
         printf("> ");
         scanf("%s", msg);
-        send(sockfd, msg, strlen(msg), 0);
+        send(new_fd, msg, strlen(msg), 0);
       }
       close(new_fd);
       exit(0);
