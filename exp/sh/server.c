@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <assert.h>
 #include <fcntl.h>
+#include <builtin.h>
 
 #define PORT "3491"
 #define BACKLOG 10
@@ -130,11 +131,12 @@ int main(void)
         numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
         buf[numbytes] = '\0';
         printf("%s: %s\n", name, buf);
+        char **tokens = str_split(buf, ' ');
+        check_for_builtins(tokens);
         if (!fork()) { // child process
           close(new_fd);
           close(STDOUT_FILENO);
           open("./output", O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-          char **tokens = str_split(buf, ' ');
           int i;
           for (i = 0; *(tokens + i); i++);
             *(tokens + i) = NULL;

@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-I.
 
-all: server.c client.c
-	$(CC) server.c -o server
+all: server.c client.c builtin.c builtin.h
+	$(CC) $(CFLAGS) server.c builtin.c -o server
 	$(CC) client.c -o client
 
 clean:
