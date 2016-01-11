@@ -132,15 +132,21 @@ int main(void)
         buf[numbytes] = '\0';
         printf("%s: %s\n", name, buf);
         char **tokens = str_split(buf, ' ');
-        check_for_builtins(tokens);
+        
+
         if (!fork()) { // child process
           close(new_fd);
           close(STDOUT_FILENO);
           open("./output", O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-          int i;
-          for (i = 0; *(tokens + i); i++);
-            *(tokens + i) = NULL;
-          execvp(tokens[0], tokens);
+          if (is_builtin(tokens)) {
+            check_for_builtins(tokens);
+            exit(0);
+          } else {
+            int i;
+            for (i = 0; *(tokens + i); i++);
+              *(tokens + i) = NULL;
+            execvp(tokens[0], tokens);
+          }
         } else wait(NULL);
         // printf("> ");
         // fgets (msg, MAX_MSG_SIZE, stdin);

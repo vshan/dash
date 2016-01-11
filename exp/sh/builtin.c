@@ -60,3 +60,15 @@ int check_for_builtins(char **args)
     }
   }
 }
+
+int is_builtin(char **args)
+{
+  int i;
+  for (i = 0; i < dash_builtin_num(); i++)
+  {
+    if (strcmp(args[0], builtin_names[i]) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
