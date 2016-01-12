@@ -1,5 +1,7 @@
 #include <net/server.h>
 #include <sh/shell.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
    
@@ -21,13 +23,22 @@ int main(int argc, char *argv[]) {
 
   if (pid == 0) { // child process
     // listening process
+    while (1) {
+      listen();
+      accept();
+      receive();
+      char *line = dashp_extract(msg);
+      dash_eval(line);
+    }
+
+  }
+  else { // parent process
+    while (1) {
+      printf("%s ", promt);
+      char *line = dash_read_line();
+      dash_eval(line);
+    }
   }
 
-  while (1) {
-    printf("%s ", promt);
-    char *line = read_line();
-    dash_eval(line);
-  }
-
-  return 0;
+  return EXIT_SUCCESS;
 } 
