@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
 
   dashp_send(reg_msg, argv[1]);
 
+  pipe();
+
   pid = fork();
 
   if (pid == 0) { // child process
@@ -27,8 +29,9 @@ int main(int argc, char *argv[]) {
       listen();
       accept();
       receive();
+      if (FIN_WRITE_PROTO) write(pipe);
       char *line = dashp_extract(msg);
-      dash_eval(line);
+      dash_eval(line, DASH_LISTEN);
     }
 
   }
@@ -36,7 +39,9 @@ int main(int argc, char *argv[]) {
     while (1) {
       printf("%s ", promt);
       char *line = dash_read_line();
-      dash_eval(line);
+      rv = dash_eval(line, DASH_EXEC);
+      if (rv == INVOLVED_NETWORKING)
+        read_from_pipe();
     }
   }
 
