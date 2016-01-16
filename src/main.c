@@ -15,11 +15,9 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  // reg_msg = dashp_register(argv[2]);
+  int fd[2];
 
-  // dashp_send(reg_msg, argv[1]);
-
-  pipe();
+  pipe(fd);
 
   pid = fork();
 
@@ -28,10 +26,14 @@ int main(int argc, char *argv[]) {
     int sockfd = start_listening_on(PORT);
     while (1) {
       protocol_msg = receive_msg(sockd);
-      
-      if (FIN_WRITE_PROTO) write(pipe);
-      char *line = dashp_extract(msg);
-      dash_eval(line, DASH_LISTEN);
+      dashp_msg dmsg = extract_dashp(protocol_msg);
+      if (dmsg->dps == DASHP_FIO) { 
+        write(fd[0]); // write dmsg->payload to fd[0]
+      }
+      else if (dmsg->dsp == DASHP_PIP) {
+        char *command = dmsg->command;
+        dash_eval(command, 0);
+      }
     }
 
   }
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
       char *line = dash_read_line();
       rv = dash_eval(line, DASH_EXEC);
       if (rv == INVOLVED_NETWORKING)
-        read_from_pipe();
+        read(fd[1]);
     }
   }
 
