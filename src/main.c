@@ -25,9 +25,9 @@ int main(int argc, char *argv[]) {
 
   if (pid == 0) { // child process
     // listening process
-    start_listening_on(PORT);
+    int sockfd = start_listening_on(PORT);
     while (1) {
-      protocol_msg = receive_msg();
+      protocol_msg = receive_msg(sockd);
       
       if (FIN_WRITE_PROTO) write(pipe);
       char *line = dashp_extract(msg);
