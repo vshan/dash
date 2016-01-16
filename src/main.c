@@ -15,9 +15,9 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  reg_msg = dashp_register(argv[2]);
+  // reg_msg = dashp_register(argv[2]);
 
-  dashp_send(reg_msg, argv[1]);
+  // dashp_send(reg_msg, argv[1]);
 
   pipe();
 
@@ -25,10 +25,10 @@ int main(int argc, char *argv[]) {
 
   if (pid == 0) { // child process
     // listening process
+    start_listening_on(PORT);
     while (1) {
-      listen();
-      accept();
-      receive();
+      protocol_msg = receive_msg();
+      
       if (FIN_WRITE_PROTO) write(pipe);
       char *line = dashp_extract(msg);
       dash_eval(line, DASH_LISTEN);

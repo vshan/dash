@@ -19,7 +19,7 @@ dashp_msg_t extract_dashp(char* msg)
     proto_msg->command = NULL;
     proto_msg->origin = NULL;
     proto_msg->payload = msg_split[1];
-  }
+  } 
   else {
     // error handle
   }
