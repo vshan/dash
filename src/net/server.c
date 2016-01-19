@@ -69,3 +69,54 @@ char *receive_msg(int sockfd)
   close(new_fd);
   return buf;
 }
+
+int send_to_host(char *msg, char *remotehost)
+{
+  int sockfd, numbytes;  
+  char buf[MAXDATASIZE];
+  struct addrinfo hints, *servinfo, *p;
+  int rv;
+  char s[INET6_ADDRSTRLEN];
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  getaddrinfo(remotehost, PORT, &hints, &servinfo);
+  sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
+              servinfo->ai_protocol);
+  connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
+  inet_ntop(servinfo->ai_family, get_in_addr((struct sockaddr *)servinfo->ai_addr),
+          s, sizeof s);
+  freeaddrinfo(servinfo);
+  send(sockfd, msg, strlen(msg), 0);
+  close(sockfd);
+  return 0;
+}
+
+char *get_my_ip_addr()
+{
+  int fd;
+  struct ifreq ifr;
+
+  fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+  ifr.ifr_addr.sa_family = AF_INET;
+
+  strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+  goto eth0;
+ 
+  wlan0:
+  strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
+ 
+  eth0:
+  ioctl(fd, SIOCGIFADDR, &ifr);
+
+  char *result = (char *) malloc (sizeof(char) * 100);
+
+  result = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+
+  if (strcmp(result, "0.0.0.0") == 0)
+    goto wlan0;
+  
+  close(fd);
+  return result;
+}
