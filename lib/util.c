@@ -46,44 +46,105 @@ char** str_split(char* a_str, const char a_delim)
     return result;
 }
 
-int dash_eval(char *line, char *std_input)
+int no_of_sub_strings(char **strings)
+{
+  int i;
+  for (i = 0; strings[i] != NULL, i++);
+  return i;
+}
+
+char *join_strings(char **tokens, char delim, int start, int fin)
+{
+  int i, len = 0;
+  for (i = start; i < fin; i++) {
+    len += strlen(tokens[i]);
+    len += 1;
+  }
+  char *dest = (char *) malloc (sizeof char * len);
+
+  for (i = start; i < fin; i++)
+  {
+    strcat(dest, tokens[i]);
+    strcat(dest, delim);
+  }
+
+  return dest;
+}
+
+char *extract_host(char *string)
+{
+  char **strings = str_split(string, ':');
+  return strings[0];
+}
+
+int dash_eval(char *line, char *std_input, char *origin)
 {
   if (line == NULL)
     return 1;
-
-  if (std_input != NULL)
-  {
-    // There is some standard input :)  
-  }
-  else
-  {
-    // No standard input. It's the first one! This should be major.
-  }
-
+  
   char **tokens = str_split(line, ' ');
   char *token;
   int i;
   int num_tokens = no_of_sub_strings(tokens);
+  int remote_pipe_pos = -1;
 
   for (i = 0; i < num_tokens; i++) {
-      if (strcmp(tokens[i], REMOTE_PIPE) == 0) {
-          if (i == 0) {
-              fprintf(stderr, "Please ensure there is expression behind remote pipe.\n", );
-              return 0;
-          }
-          else if (i == num_tokens) {
-              fprintf(stderr, "Please ensure there is expression after remote pipe.\n", );
-              return 0;
-          }
-          char *subcommand = join_strings(tokens, ' ', i+1, num_tokens);
-          char *remotehost = extract_host(subcommand);
-          char *maincommand = join_strings(tokens, ' ', 0, i);
-          char *msg_data = dash_exec_scmd(maincommand_tokens, num_mc_tokens);
-          char *pip_msg = dashp_pip(msg_data, subcommand, remotehost);
-          send_to_host(pip_msg, remotehost);
-          
-      }
+    if (strcmp(tokens[i], REMOTE_PIPE) == 0) {
+      remote_pipe_pos = i;
+      break;
+    }
   }
+
+  if (remote_pipe_pos == -1) // No remote pipes
+  {
+    char *msg_data = dash_exec_scmd(tokens, remote_pipe_pos + 1, num_tokens, std_input);
+    if (std_input == NULL) {
+      printf("%s\n", msg_data);
+      return;
+    }
+    else { // Send to origin
+      char *fio_msg = dashp_fio(msg_data);
+      send_to_host(fio_msg, origin);
+      return;
+    }
+  }
+  else // Remote pipe at remote_pipe_pos
+  {
+    char *subcommand = join_strings(tokens, ' ', remote_pipe_pos+1, num_tokens);
+    char *remotehost = extract_host(subcommand);
+    char *maincommand = join_strings(tokens, ' ', 0, remote_pipe_pos);
+    char *msg_data = dash_exec_scmd(tokens, 0, remote_pipe_pos, std_input);
+    if (std_input == NULL) {
+      // set origin as myself
+      // send pip to remotehost
+      return;
+    }
+    else {
+      // extract origin
+      // make pip
+      // send to remotehost
+      return;
+    }
+  }
+  // for (i = 0; i < num_tokens; i++) {
+  //   if (strcmp(tokens[i], REMOTE_PIPE) == 0) {
+  //     remote_pipe_count++;
+  //     if (i == 0) {
+  //       fprintf(stderr, "Please ensure there is expression behind remote pipe.\n");
+  //       return 0;
+  //     }
+  //     else if (i == num_tokens) {
+  //       fprintf(stderr, "Please ensure there is expression after remote pipe.\n");
+  //       return 0;
+  //     }
+  //     char *subcommand = join_strings(tokens, ' ', i+1, num_tokens);
+  //     char *remotehost = extract_host(subcommand);
+  //     char *maincommand = join_strings(tokens, ' ', 0, i);
+  //     char *msg_data = dash_exec_scmd(maincommand_tokens, num_mc_tokens, std_input);
+  //     char *pip_msg = dashp_pip(msg_data, subcommand, remotehost);
+  //     send_to_host(pip_msg, remotehost);  
+  //   }
+  // }
 }
 
 char** tokenize(char *line)
@@ -91,11 +152,11 @@ char** tokenize(char *line)
     
 }
 
-char* dash_exec_scmd(char **tokens, int num)
+char* dash_exec_scmd(char **tokens, int num, char *std_input)
 {   
     char *std_output;
     validate_command(tokens, num);
-    dash_exec_t dash_cmd = create_exec_t(tokens, num);
+    dash_exec_t dash_cmd = create_exec_t(tokens, num, std_input);
 
     std_output = fork_pipe_exec(dash_cmd);
 
@@ -130,7 +191,15 @@ int fork_pipe_exec(dash_exec_t cmds)
     int in, fd[2];
     char *std_output;
 
-    in = 0;
+    if (cmds->std_input == NULL) {
+      in = 0;
+    }
+    else {
+      pipe(fd);
+      write(fd[1], cmds->std_input, strlen(cmds->std_input));
+      close(fd[1]);
+      in = fd[0];
+    }
 
     for (i = 0; i < cmds->pipes; ++i) {
         pipe(fd);
@@ -153,6 +222,9 @@ int fork_pipe_exec(dash_exec_t cmds)
                    cmds->commands[i]->args);
         }
     } else wait(NULL);
+
+    // or instead of files, use pipe and read pipe to
+    // the buffer std_output
 
     FILE *f = fopen("/var/tmp/output", "rb");
     fseek(f, 0, SEEK_END);

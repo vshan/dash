@@ -14,6 +14,7 @@ typedef struct dash_scmd* dash_scmd_t;
 struct dash_exec {
   int pipes;
   dash_scmd_t *commands;
+  char *std_input;
 };
 
 typedef struct dash_exec* dash_exec_t;
