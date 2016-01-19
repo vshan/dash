@@ -53,7 +53,11 @@ int dash_eval(char *line, char *std_input)
 
   if (std_input != NULL)
   {
-    
+    // There is some standard input :)  
+  }
+  else
+  {
+    // No standard input. It's the first one! This should be major.
   }
 
   char **tokens = str_split(line, ' ');
