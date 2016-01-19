@@ -55,10 +55,20 @@ char* make_dashp(dashp_msg_t proto_msg)
 
 char *dashp_fio(char *msg)
 {
-  dashp_msg_t pr_msg;
+  dashp_msg_t pr_msg = (dashp_msg_t) malloc (sizeof struct dashp_msg);
   pr_msg->dps = DASHP_FIO;
   pr_msg->payload = msg;
   pr_msg->origin = NULL;
   pr_msg->command = NULL;
+  return make_dashp(pr_msg);
+}
+
+char *dashp_pip(char *msg, char *origin, char *command)
+{
+  dashp_msg_t pr_msg = (dashp_msg_t) malloc (sizeof struct dashp_msg);
+  pr_msg->dps = DASHP_PIP;
+  pr_msg->payload = msg;
+  pr_msg->origin = origin;
+  pr_msg->command = command;
   return make_dashp(pr_msg);
 }

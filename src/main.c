@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_BUFFER_SIZE 1000000
+
 int main(int argc, char *argv[]) {
    
   char *prompt = "~$";
   char *reg_msg;
   pid_t pid;
+  char buffer[MAX_BUFFER_SIZE];
   
   // Ensure no. of arguments are correct
   if (argc != 3) {
@@ -28,11 +31,11 @@ int main(int argc, char *argv[]) {
       protocol_msg = receive_msg(sockd);
       dashp_msg dmsg = extract_dashp(protocol_msg);
       if (dmsg->dps == DASHP_FIO) { 
-        write(fd[1]); // write dmsg->payload to fd[1]
+        write(fd[1], dmsg->payload, strlen(dmsg->payload)); // write dmsg->payload to fd[1]
       }
       else if (dmsg->dsp == DASHP_PIP) {
         char *command = dmsg->command;
-        dash_eval(command, dmg->payload);
+        dash_eval(command, dmg->payload, dmg->origin);
       }
     }
 
@@ -41,9 +44,11 @@ int main(int argc, char *argv[]) {
     while (1) {
       printf("%s ", promt);
       char *line = dash_read_line();
-      rv = dash_eval(line, NULL);
-      if (rv == INVOLVED_NETWORKING)
-        read(fd[0]);
+      rv = dash_eval(line, NULL, NULL);
+      if (rv == 2) { // involved networking
+        read(fd[0], buffer, MAX_BUFFER_SIZE);
+        printf("%s\n", buffer);
+      }
     }
   }
 
