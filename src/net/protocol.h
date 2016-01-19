@@ -15,3 +15,7 @@ typedef struct dashp_msg* dashp_msg_t;
 dashp_msg_t extract_dashp(char *msg);
 
 char *make_dashp(dashp_msg_t);
+
+char *dashp_fio(char *msg);
+
+char *dashp_pip(char *msg, char *command, char *origin);

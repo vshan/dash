@@ -52,3 +52,13 @@ char* make_dashp(dashp_msg_t proto_msg)
   }
   return msg;
 }
+
+char *dashp_fio(char *msg)
+{
+  dashp_msg_t pr_msg;
+  pr_msg->dps = DASHP_FIO;
+  pr_msg->payload = msg;
+  pr_msg->origin = NULL;
+  pr_msg->command = NULL;
+  return make_dashp(pr_msg);
+}
