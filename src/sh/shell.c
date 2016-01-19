@@ -1,3 +1,11 @@
+char *dash_read_line()
+{
+  char *line = NULL;
+  ssize_t bufsize = 0; // have getline allocate a buffer for us
+  getline(&line, &bufsize, stdin);
+  return line;
+}
+
 char *extract_host(char *string)
 {
   char **strings = str_split(string, ':');
