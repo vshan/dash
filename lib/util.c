@@ -147,20 +147,27 @@ int dash_eval(char *line, char *std_input, char *origin)
   // }
 }
 
-char** tokenize(char *line)
-{
-    
-}
-
-char* dash_exec_scmd(char **tokens, int num, char *std_input)
+char* dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
 {   
     char *std_output;
     validate_command(tokens, num);
-    dash_exec_t dash_cmd = create_exec_t(tokens, num, std_input);
+    dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
 
     std_output = fork_pipe_exec(dash_cmd);
 
     return std_output;
+}
+
+dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
+{
+  int i, no_of_pipes = 0;
+  for (i = start; i < fin; i++) {
+    if (strcmp(tokens[i], PIPE) == 0)
+      no_of_pipes++;
+  }
+
+  dash_exec_t dash_cmd = (dash_exect_t) malloc (sizeof(struct dash_exec));
+
 }
 
 int create_process(int in, int out, dash_scmd_t scmd)
