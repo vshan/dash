@@ -149,13 +149,13 @@ int dash_eval(char *line, char *std_input, char *origin)
 
 char* dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
 {   
-    char *std_output;
-    validate_command(tokens, num);
-    dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
+  char *std_output;
+  validate_command(tokens, num);
+  dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
 
-    std_output = fork_pipe_exec(dash_cmd);
+  std_output = fork_pipe_exec(dash_cmd);
 
-    return std_output;
+  return std_output;
 }
 
 dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
@@ -166,8 +166,23 @@ dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
       no_of_pipes++;
   }
 
-  dash_exec_t dash_cmd = (dash_exect_t) malloc (sizeof(struct dash_exec));
+  dash_exec_t dash_cmd = (dash_exec_t) malloc (sizeof(struct dash_exec));
+  dash_cmd->pipes = no_of_pipes;
+  dash_cmd->std_input = std_input;
+  dash_cmd->commands = (dash_scmd_t *) malloc (sizeof(struct dash_scmd) * (no_of_pipes + 1));
 
+  int count = 0;
+  for (i = start; i < fin; i++) {
+    for (j = i, b = 0; strcmp(tokens[j], PIPE) != 0, j++, b++) {
+      if (j == i)
+        dash_cmd->commands[count]->name = tokens[j];
+      dash_cmd->commands[count]->args[b] = tokens[j];
+    }
+    count++;
+    i = j + 1;
+  }
+
+  return dash_cmd;
 }
 
 int create_process(int in, int out, dash_scmd_t scmd)
