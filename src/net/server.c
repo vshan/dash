@@ -92,7 +92,7 @@ int send_to_host(char *msg, char *remotehost)
   return 0;
 }
 
-char *get_my_ip_addr()
+char *get_my_ip_addr(void)
 {
   int fd;
   struct ifreq ifr;

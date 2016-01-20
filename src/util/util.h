@@ -1,4 +1,7 @@
 char** str_split(char* a_str, const char a_delim);
+int no_of_sub_strings(char **);
+char *join_strings(char **, char, int, int);
+char *extract_host(char *);
 
 #define REMOTE_PIPE "~|"
 #define REMOTE_OUT  "~>"

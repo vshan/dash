@@ -12,10 +12,10 @@ struct dashp_msg {
 
 typedef struct dashp_msg* dashp_msg_t;
 
-dashp_msg_t extract_dashp(char *msg);
+dashp_msg_t extract_dashp(char *);
 
 char *make_dashp(dashp_msg_t);
 
-char *dashp_fio(char *msg);
+char *dashp_fio(char *);
 
-char *dashp_pip(char *msg, char *command, char *origin);
+char *dashp_pip(char *, char *, char *);

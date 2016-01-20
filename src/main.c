@@ -1,9 +1,16 @@
-#include <net/server.h>
-#include <sh/shell.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include "sh/shell.h"
+#include "net/server.h"
+#include "net/protocol.h"
+#include "util/util.h"
 
 #define MAX_BUFFER_SIZE 1000000
+
+#ifndef INVOLVED_NETWORKING
+#define INVOLVED_NETWORKING 2
+#endif
 
 int main(int argc, char *argv[]) {
    
@@ -45,7 +52,7 @@ int main(int argc, char *argv[]) {
       printf("%s ", promt);
       char *line = dash_read_line();
       rv = dash_eval(line, NULL, NULL);
-      if (rv == 2) { // involved networking
+      if (rv == INVOLVED_NETWORKING) { // involved networking
         read(fd[0], buffer, MAX_BUFFER_SIZE);
         printf("%s\n", buffer);
       }
