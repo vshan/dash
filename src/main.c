@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
   char buffer[MAX_BUFFER_SIZE];
   
   // Ensure no. of arguments are correct
-  if (argc != 3) {
+  if (argc != 3 || (strcmp(argv[1], "--help") == 0)) {
     fprintf(stderr, "usage: dash <IP address> <hostname>\n");
     return 0;
   }
