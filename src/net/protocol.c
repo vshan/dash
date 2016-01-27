@@ -6,14 +6,14 @@ dashp_msg_t extract_dashp(char* msg)
   dashp_msg_t proto_msg = (dashp_msg_t) malloc (sizeof struct dashp_msg);
   char **msg_split = str_split(msg, DASHP_DELIM);
   int i;
-  if (strcmp(msg_split[0], 'PIP') == 0) 
+  if (strcmp(msg_split[0], "PIP") == 0) 
   {
     proto_msg->dps = DASHP_PIP;
     proto_msg->command = strdup(msg_split[1]);
     proto_msg->origin = strdup(msg_split[2]);
     proto_msg->payload = strdup(msg_split[3]);
   }
-  else if (strcmp(msg_split[0], 'FIO') == 0)
+  else if (strcmp(msg_split[0], "FIO") == 0)
   {
     proto_msg->dps = DASHP_FIO;
     proto_msg->command = NULL;
