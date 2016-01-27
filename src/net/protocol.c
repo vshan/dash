@@ -29,9 +29,16 @@ dashp_msg_t extract_dashp(char* msg)
 char* make_dashp(dashp_msg_t proto_msg)
 {
   char *msg;
+  int total_len = 1;
   if (proto_msg->dps == DASHP_PIP)
-  {
-    strcat(msg, 'PIP');
+  { 
+    total_len += 3;
+    total_len = total_len + 3*strlen(DASHP_DELIM) 
+                + strlen(proto_msg->command)
+                + strlen(proto_msg->origin)
+                + strlen(proto_msg->payload);
+    msg = (char *) malloc (sizeof(char) * total_len);
+    strcat(msg, "PIP");
     strcat(msg, DASHP_DELIM);
     strcat(msg, proto_msg->command);
     strcat(msg, DASHP_DELIM);
@@ -42,7 +49,11 @@ char* make_dashp(dashp_msg_t proto_msg)
   }
   else if (proto_msg->dps == DASHP_FIO)
   {
-    strcat(msg, 'FIO');
+    total_len += 3;
+    total_len = total_len + strlen(DASHP_DELIM)
+                + strlen(proto_msg->payload);
+    msg = (char *) malloc (sizeof(char) * total_len);
+    strcat(msg, "FIO");
     strcat(msg, DASHP_DELIM);
     strcat(msg, proto_msg->payload);
     //strcat(msg, DASHP_BREAK);
