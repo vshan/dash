@@ -108,10 +108,10 @@ strsplit(char *string, const char *delim, int *num_split)
       flag = 1;
       substrings[num_sub_strings][i] = '\0';
       num_sub_strings++;
-            if (end == NULL) {
-              substrings[num_sub_strings++] = strdup(start);
-              break;
-            }
+      if (end == NULL) {
+        substrings[num_sub_strings++] = strdup(start);
+        break;
+      }
     }
 
   }
