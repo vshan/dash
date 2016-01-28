@@ -79,3 +79,42 @@ char *extract_host(char *string)
   char **strings = str_split(string, ':');
   return strings[0];
 }
+
+char **
+strsplit(char *string, const char *delim, int *num_split)
+{
+  int str_len = strlen(string);
+  int flag = 1;
+  int i;
+  int num_sub_strings = 0;
+  char **substrings = (char **) malloc (sizeof(char *) * str_len);
+  char *start = string;
+  char *end = strstr(string, delim);
+  while (end != NULL)
+  {
+    if (flag) {
+      substrings[num_sub_strings] = (char *) malloc (sizeof(char) * str_len);
+      i = 0;
+      flag = 0;
+    }
+
+    substrings[num_sub_strings][i++] = *start;
+    start++;
+
+    if (start == end) {
+      start += strlen(delim);
+      end += strlen(delim);
+      end = strstr(end, delim);
+      flag = 1;
+      substrings[num_sub_strings][i] = '\0';
+      num_sub_strings++;
+            if (end == NULL) {
+              substrings[num_sub_strings++] = strdup(start);
+              break;
+            }
+    }
+
+  }
+  *num_split = num_sub_strings;
+  return substrings;
+}
