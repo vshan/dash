@@ -4,7 +4,7 @@ enum dashp_state { DASHP_PIP, DASHP_FIO };
 #define DASHP_BREAK "\n\n\n\n\n"
 
 struct dashp_msg {
-  dashp_state dps;
+  enum dashp_state dps;
   char *command;
   char *payload;
   char *origin;

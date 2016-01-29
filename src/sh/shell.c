@@ -1,3 +1,12 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "util/util.h"
+#include "net/server.h"
+#include "sh/builtin.h"
+
 char *dash_read_line()
 {
   char *line = NULL;

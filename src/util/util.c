@@ -90,6 +90,13 @@ strsplit(char *string, const char *delim, int *num_split)
   char **substrings = (char **) malloc (sizeof(char *) * str_len);
   char *start = string;
   char *end = strstr(string, delim);
+
+  if (start == end) {
+    start += strlen(delim);
+    end += strlen(delim);
+    end = strstr(end, delim);
+  }
+
   while (end != NULL)
   {
     if (flag) {

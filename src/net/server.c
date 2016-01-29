@@ -12,7 +12,8 @@
 #include <signal.h>
 #include <assert.h>
 #include <fcntl.h>
-#include "server.h"
+
+#include "net/server.h"
 
 void *get_in_addr(struct sockaddr *sa)
 {

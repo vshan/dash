@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 #include "sh/shell.h"
+#include "sh/builtin.h"
 #include "net/server.h"
 #include "net/protocol.h"
 #include "util/util.h"
@@ -10,7 +12,6 @@
 
 #ifndef INVOLVED_NETWORKING
 #define INVOLVED_NETWORKING 2
-#endif
 
 int main(int argc, char *argv[]) {
    
@@ -61,3 +62,5 @@ int main(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 } 
+
+#endif

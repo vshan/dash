@@ -1,3 +1,5 @@
+// include file for struct sockaddr
+
 //#define PORT "3491"
 #define BACKLOG 10
 #define MAXDATASIZE 100
