@@ -74,7 +74,7 @@ int dash_eval(char *line, char *std_input, char *origin)
 char* dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
 {   
   char *std_output;
-  validate_command(tokens, num);
+  //validate_command(tokens, num);
   dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
 
   std_output = fork_pipe_exec(dash_cmd);
@@ -93,7 +93,7 @@ dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
   dash_exec_t dash_cmd = (dash_exec_t) malloc (sizeof(struct dash_exec));
   dash_cmd->pipes = no_of_pipes;
   dash_cmd->std_input = std_input;
-  dash_cmd->commands = (dash_scmd_t *) malloc (sizeof(struct dash_scmd) * (no_of_pipes + 1));
+  dash_cmd->commands = (dash_scmd_t *) malloc (sizeof(dash_scmd_t) * (no_of_pipes + 1));
 
   int count = 0;
   for (i = start; i < fin; i++) {
@@ -101,8 +101,10 @@ dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
       if (j == i) {
         dash_cmd->commands[count] = (dash_scmd_t) malloc (sizeof(struct dash_scmd));
         dash_cmd->commands[count]->name = tokens[j];
+        dash_cmd->commands[count]->args = (char **) malloc(sizeof(char *) * 10);
       }
       dash_cmd->commands[count]->args[b] = tokens[j];
+      dash_cmd->commands[count]->args[b+1] = NULL;
     }
     count++;
     i = j + 1;
@@ -136,7 +138,7 @@ int fork_pipe_exec(dash_exec_t cmds)
 {
     int i;
     pid_t pid;
-    int in, fd[2];
+    int in, fd[2], fd2[2], fd3[2];
     char *std_output;
 
     if (cmds->std_input == NULL) {
@@ -160,30 +162,20 @@ int fork_pipe_exec(dash_exec_t cmds)
         dup2(in, 0);
 
     if (!fork()) { //child process
-        close(STDOUT_FILENO);
-        open("/var/tmp/output", "rb");
-        if (is_builtin(cmds)) {
-            run_builtins(cmds);
-            exit(0);
-        } else {
-            execvp(cmds->commands[i]->name, 
-                   cmds->commands[i]->args);
-        }
+      dup2(fd3[1], 1);
+      if (in != 0)
+        dup2(in, 0);
+        //if (is_builtin(cmds)) {
+        //  run_builtins(cmds);
+        //    exit(0);
+        //} else {
+      execvp(cmds->commands[i]->name, cmds->commands[i]->args);
     } else wait(NULL);
 
-    // or instead of files, use pipe and read pipe to
-    // the buffer std_output
+    std_output = malloc(1000);
 
-    FILE *f = fopen("/var/tmp/output", "rb");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    std_output = malloc(fsize + 1);
-    fread(std_output, fsize, 1, f);
-    fclose(f);
-
-    std_output[fsize] = 0;
+    int num_read = read(fd3[0], std_output, 1000);
+    std_output[num_read] = '\0';
 
     return std_output;
 }

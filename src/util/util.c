@@ -53,14 +53,14 @@ int no_of_sub_strings(char **strings)
   return i;
 }
 
-char *join_strings(char **tokens, char delim, int start, int fin)
+char *join_strings(char **tokens, char *delim, int start, int fin)
 {
   int i, len = 0;
   
   for (i = start; i < fin; i++)
   {
     len += strlen(tokens[i]);
-    len += 1;
+    len += strlen(delim);
   }
 
   char *dest = (char *) malloc (sizeof char * len);
