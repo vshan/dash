@@ -98,8 +98,10 @@ dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
   int count = 0;
   for (i = start; i < fin; i++) {
     for (j = i, b = 0; strcmp(tokens[j], PIPE) != 0, j++, b++) {
-      if (j == i)
+      if (j == i) {
+        dash_cmd->commands[count] = (dash_scmd_t) malloc (sizeof(struct dash_scmd));
         dash_cmd->commands[count]->name = tokens[j];
+      }
       dash_cmd->commands[count]->args[b] = tokens[j];
     }
     count++;
