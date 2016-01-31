@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "sh/shell.h"
-#include "sh/builtin.h"
+//#include "sh/builtin.h"
 #include "net/server.h"
 #include "net/protocol.h"
 #include "util/util.h"

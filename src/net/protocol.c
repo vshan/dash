@@ -7,7 +7,8 @@
 dashp_msg_t extract_dashp(char* msg)
 {
   dashp_msg_t proto_msg = (dashp_msg_t) malloc (sizeof(struct dashp_msg));
-  char **msg_split = str_split(msg, DASHP_DELIM);
+  int num;
+  char **msg_split = str_split(msg, DASHP_DELIM, &num);
   int i;
   if (strcmp(msg_split[0], "PIP") == 0) 
   {

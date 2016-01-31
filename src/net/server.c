@@ -51,7 +51,7 @@ int start_listening_on(char *port)
 
 char *receive_msg(int sockfd)
 {
-  char buf[100];
+  char *buf = (char *) malloc (sizeof(char) * 1000);
   int numbytes, new_fd;
   struct sockaddr_storage their_addr;
   socklen_t sin_size;
@@ -63,7 +63,6 @@ char *receive_msg(int sockfd)
     get_in_addr((struct sockaddr *)&their_addr),
     s, sizeof s);
 
-  char name[100];
   close(sockfd);
   numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0);
   buf[numbytes] = '\0';

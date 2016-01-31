@@ -5,31 +5,17 @@
 
 #include "util/util.h"
 #include "net/server.h"
-#include "sh/builtin.h"
-
-char *dash_read_line()
-{
-  char *line = NULL;
-  ssize_t bufsize = 0; // have getline allocate a buffer for us
-  getline(&line, &bufsize, stdin);
-  return line;
-}
-
-char *extract_host(char *string)
-{
-  char **strings = str_split(string, ':');
-  return strings[0];
-}
+#include "sh/shell.h"
 
 int dash_eval(char *line, char *std_input, char *origin)
 {
   if (line == NULL)
     return 1;
-  
-  char **tokens = str_split(line, ' ');
+
+  int num_tokens;
+  char **tokens = str_split(line, " ", &num_tokens);
   char *token;
   int i;
-  int num_tokens = no_of_sub_strings(tokens);
   int remote_pipe_pos = -1;
 
   for (i = 0; i < num_tokens; i++) {
@@ -71,7 +57,7 @@ int dash_eval(char *line, char *std_input, char *origin)
   }
 }
 
-char* dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
+char *dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
 {   
   char *std_output;
   //validate_command(tokens, num);
@@ -134,7 +120,7 @@ int create_process(int in, int out, dash_scmd_t scmd)
     return pid;
 }
 
-int fork_pipe_exec(dash_exec_t cmds)
+char *fork_pipe_exec(dash_exec_t cmds)
 {
     int i;
     pid_t pid;
@@ -153,7 +139,7 @@ int fork_pipe_exec(dash_exec_t cmds)
 
     for (i = 0; i < cmds->pipes; ++i) {
         pipe(fd);
-        create_process(in, fd[1], cmds->commands + i);
+        create_process(in, fd[1], cmds->commands[i]);
         close(fd[1]);
         in = fd[0];
     }
