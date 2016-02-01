@@ -12,7 +12,12 @@ char *dash_read_line(void)
 {
   char *line = NULL;
   ssize_t bufsize = 0; // have getline allocate a buffer for us
-  getline(&line, &bufsize, stdin);
+  int chars = getline(&line, &bufsize, stdin);
+  if ((line)[chars - 1] == '\n') 
+  {
+      (line)[chars - 1] = '\0';
+      --chars;
+  }
   return line;
 }
 
@@ -71,7 +76,6 @@ char *dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
   char *std_output;
   //validate_command(tokens, num);
   dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
-
   std_output = fork_pipe_exec(dash_cmd);
 
   return std_output;

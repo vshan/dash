@@ -48,6 +48,11 @@ char **str_split(char *string, const char *delim, int *num_split)
     end = strstr(end, delim);
   }
 
+  if (end == NULL) {
+    substrings[0] = strdup(string);
+    num_sub_strings++;
+  }
+
   while (end != NULL)
   {
     if (flag) {
