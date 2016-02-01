@@ -1,4 +1,4 @@
-// include file for struct sockaddr
+#include <netinet/in.h>
 
 #define PORT "3491"
 #define BACKLOG 10

@@ -12,6 +12,8 @@
 #include <signal.h>
 #include <assert.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 
 #include "net/server.h"
 

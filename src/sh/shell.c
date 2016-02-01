@@ -2,10 +2,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 #include "util/util.h"
 #include "net/server.h"
 #include "sh/shell.h"
+
+char *dash_read_line(void)
+{
+  char *line = NULL;
+  ssize_t bufsize = 0; // have getline allocate a buffer for us
+  getline(&line, &bufsize, stdin);
+  return line;
+}
 
 int dash_eval(char *line, char *std_input, char *origin)
 {
@@ -40,9 +49,9 @@ int dash_eval(char *line, char *std_input, char *origin)
   }
   else // Remote pipe at remote_pipe_pos
   {
-    char *subcommand = join_strings(tokens, ' ', remote_pipe_pos+1, num_tokens);
+    char *subcommand = join_strings(tokens, " ", remote_pipe_pos+1, num_tokens);
     char *remotehost = extract_host(subcommand);
-    char *maincommand = join_strings(tokens, ' ', 0, remote_pipe_pos);
+    char *maincommand = join_strings(tokens, " ", 0, remote_pipe_pos);
     char *msg_data = dash_exec_scmd(tokens, 0, remote_pipe_pos, std_input);
     char *send_msg;
     if (std_input == NULL) {
@@ -70,7 +79,7 @@ char *dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
 
 dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
 {
-  int i, no_of_pipes = 0;
+  int i, j, b, no_of_pipes = 0;
   for (i = start; i < fin; i++) {
     if (strcmp(tokens[i], PIPE) == 0)
       no_of_pipes++;
@@ -83,7 +92,7 @@ dash_exec_t create_exec_t(char **tokens, int start, int fin, char *std_input)
 
   int count = 0;
   for (i = start; i < fin; i++) {
-    for (j = i, b = 0; strcmp(tokens[j], PIPE) != 0, j++, b++) {
+    for (j = i, b = 0; strcmp(tokens[j], PIPE) != 0; j++, b++) {
       if (j == i) {
         dash_cmd->commands[count] = (dash_scmd_t) malloc (sizeof(struct dash_scmd));
         dash_cmd->commands[count]->name = tokens[j];

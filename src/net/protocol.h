@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 enum dashp_state { DASHP_PIP, DASHP_FIO };
 
 #define DASHP_DELIM "!@#$%"

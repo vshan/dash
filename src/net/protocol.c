@@ -30,7 +30,7 @@ dashp_msg_t extract_dashp(char* msg)
   return proto_msg;
 }
 
-char* make_dashp(dashp_msg_t proto_msg)
+char *make_dashp(dashp_msg_t proto_msg)
 {
   char *msg;
   int total_len = 1;

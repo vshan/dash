@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "util/util.h"
 
@@ -13,7 +14,7 @@ char *join_strings(char **tokens, char *delim, int start, int fin)
     len += strlen(delim);
   }
 
-  char *dest = (char *) malloc (sizeof char * len);
+  char *dest = (char *) malloc (sizeof(char) * len);
 
   for (i = start; i < fin; i++)
   {
