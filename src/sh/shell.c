@@ -26,6 +26,7 @@ int dash_eval(char *line, char *std_input, char *origin)
   if (line == NULL)
     return 1;
 
+  printf("Sup biss");
   int num_tokens;
   char **tokens = str_split(line, " ", &num_tokens);
   char *token;
@@ -43,7 +44,7 @@ int dash_eval(char *line, char *std_input, char *origin)
   {
     char *msg_data = dash_exec_scmd(tokens, remote_pipe_pos + 1, num_tokens, std_input);
     if (std_input == NULL) {
-      printf("%s\n", msg_data);
+      printf("%s", msg_data);
       return 1;
     }
     else { // Send to origin
@@ -77,7 +78,6 @@ char *dash_exec_scmd(char **tokens, int start, int fin, char *std_input)
   //validate_command(tokens, num);
   dash_exec_t dash_cmd = create_exec_t(tokens, start, fin, std_input);
   std_output = fork_pipe_exec(dash_cmd);
-
   return std_output;
 }
 
@@ -128,7 +128,7 @@ int create_process(int in, int out, dash_scmd_t scmd)
         }
 
         return execvp(scmd->name, scmd->args);
-    }
+    } else wait(NULL);
 
     return pid;
 }
@@ -140,10 +140,7 @@ char *fork_pipe_exec(dash_exec_t cmds)
     int in, fd[2], fd2[2], fd3[2];
     char *std_output;
 
-    if (cmds->std_input == NULL) {
-      in = 0;
-    }
-    else {
+    if (cmds->std_input != NULL) {
       pipe(fd);
       write(fd[1], cmds->std_input, strlen(cmds->std_input));
       close(fd[1]);
@@ -160,7 +157,10 @@ char *fork_pipe_exec(dash_exec_t cmds)
     if (in != 0)
         dup2(in, 0);
 
+    pipe(fd3);
+
     if (!fork()) { //child process
+      close(fd3[0]);
       dup2(fd3[1], 1);
       if (in != 0)
         dup2(in, 0);

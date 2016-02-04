@@ -16,7 +16,7 @@
 
 int main(int argc, char *argv[]) {
    
-  char prompt[] = "~$";
+  char prompt[] = "$";
   char *reg_msg;
   pid_t pid;
   char buffer[MAX_BUFFER_SIZE];
