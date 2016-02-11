@@ -26,7 +26,6 @@ int dash_eval(char *line, char *std_input, char *origin)
   if (line == NULL)
     return 1;
 
-  printf("Sup biss");
   int num_tokens;
   char **tokens = str_split(line, " ", &num_tokens);
   char *token;
@@ -61,13 +60,20 @@ int dash_eval(char *line, char *std_input, char *origin)
     char *msg_data = dash_exec_scmd(tokens, 0, remote_pipe_pos, std_input);
     char *send_msg;
     if (std_input == NULL) {
-      char *self_origin = get_my_ip_addr();
-      send_msg = dashp_pip(msg_data, self_origin, subcommand);
+      // TODO: MAKE IP ADDRESS FUNCTION WORK!
+      char *fin_remote_host = (char *) malloc (strlen(remotehost) + 1);
+      strcat(fin_remote_host, remotehost);
+      strcat(fin_remote_host, ":");
+      remove_substring(subcommand, fin_remote_host);
+      free (fin_remote_host);
+      subcommand[strlen(subcommand)-1] = '\0';
+      send_msg = dashp_pip(msg_data, "127.0.0.1", subcommand);
     }
     else {
       send_msg = dashp_pip(msg_data, origin, subcommand);
     }
     send_to_host(send_msg, remotehost);
+    printf("Sent");
     return 2;
   }
 }

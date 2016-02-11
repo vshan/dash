@@ -25,6 +25,12 @@ char *join_strings(char **tokens, char *delim, int start, int fin)
   return dest;
 }
 
+void remove_substring(char *s,const char *toremove)
+{
+  while( s=strstr(s,toremove) )
+    memmove(s,s+strlen(toremove),1+strlen(s+strlen(toremove)));
+}
+
 char *extract_host(char *string)
 {
   int x;

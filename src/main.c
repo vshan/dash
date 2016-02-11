@@ -15,17 +15,11 @@
 #define INVOLVED_NETWORKING 2
 
 int main(int argc, char *argv[]) {
-   
+
   char prompt[] = "$";
   char *reg_msg;
   pid_t pid;
   char buffer[MAX_BUFFER_SIZE];
-  
-  // Ensure no. of arguments are correct
-  // if (argc != 3 || (strcmp(argv[1], "--help") == 0)) {
-  //   fprintf(stderr, "usage: dash <IP address> <hostname>\n");
-  //   return 0;
-  // }
 
   int fd[2];
 
