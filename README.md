@@ -7,6 +7,7 @@ host1:bin1 | host2:bin2 >host3
 
 Dash is the proposed shell for the next generation of omnipresent Operating Systems.
 
-## TODO
+### TODO
 - Add documentation to README
 - Add example queries
+- Explain MAKEFILE
