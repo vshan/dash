@@ -4,3 +4,5 @@ It allows you to run shell commands on multiple servers at once and gather see t
 
 Distributed access shell example command : 
 host1:bin1 | host2:bin2 >host3
+
+Dash is the proposed shell for the next generation of omnipresent Operating Systems.
